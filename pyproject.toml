@@ -5,7 +5,7 @@ description = "Curso de Python Base"
 authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.9"
 ipython = "^8.4.0"
 
 [tool.poetry.dev-dependencies]
