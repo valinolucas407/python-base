@@ -47,5 +47,8 @@ triangles = [
 ]
 
 for t in triangles:
-    area = heron(t[0], t[1], t[2]) # unpacking the tuple
+    area = heron(*t) # unpacking the tuple
     print(f"A area do triangulo é {area}") # 6.0, 24.0, 54.0, 84.0, 60.0
+
+####
+
