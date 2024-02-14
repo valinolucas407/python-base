@@ -17,24 +17,35 @@ import logging
 import sys
 log = logging.Logger("Alerta")
 
-info = {"temperatura": None,"umidade": None}
+# TODO: Mover para módulo de utilitidades.
 
-while True:
-	#condicao de parada
-	# o dicionario está completamente preenchido
-	info_size = len(info.values())
-	filled_size = len([value for value in info.values() if value is not None])
-	if info_size == filled_size:
-		break # para o while
+def is_completely_filled(dict_of_inputs):
+    "Returns a boolean telling if a dict is completely filled."
+    info_size = len(dict_of_inputs)
+    filled_size = len(
+    	[value for value in dict_of_inputs.values() if value is not None]
+	)
+    return info_size == filled_size
 
-	for key in info.keys(): # ["temperatura","umidade"]
-		if info[key] is not None:
+def read_inputs_for_dict(dict_of_info):
+	"""Reads information for a dict from user input."""
+	for key in dict_of_info.keys(): # ["temperatura","umidade"]
+		if dict_of_info[key] is not None:
 			continue
 		try:
-			info[key] = int(input(f"{key}: ").strip())
+			dict_of_info[key] = int(input(f"{key}: ").strip())
 		except ValueError:
 			log.error("%s inválida, digite números", key)
 			break # para o for
+
+# PROGRAMA PRINCIPAL
+
+info = {"temperatura": None,"umidade": None}
+
+while not is_completely_filled(info):
+	read_inputs_for_dict(info)
+
+
 
 temp, umidade = info.values() # unpacking [30,90]
  
@@ -43,7 +54,7 @@ if temp > 45:
 elif temp > 30  and temp * 3 >= umidade:
 	print("ALERTA!!! 🥵 Perigo de calor úmido")
 elif temp >= 10 and temp <= 30:
-	print("Normal")
+	print("😃 Normal")
 elif temp >= 0 and temp< 10:
 	print("Frio")
 elif temp < 0:
