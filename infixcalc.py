@@ -20,58 +20,83 @@ $ infixcalc.py mul 10 5
 
 $ infixcalc.py
 operação: sum
-n1:5
-n2:4
+n1: 5
+n2: 4
 9
 
-Os resultados serão salvos em 'infixcalc.log'
+Os resultados serão salvos em `infixcalc.log`
 """
-
 __version__ = "0.1.0"
 
-from logging import exception
 import os
 import sys
+
 from datetime import datetime
+
+arguments = sys.argv[1:]
+
+
+valid_operations = {
+    "sum": lambda a, b: a + b,
+    "sub": lambda a, b: a - b,
+    "mul": lambda a, b: a * b,
+    "div": lambda a, b: a / b,
+}
+
+path = os.curdir
+filepath = os.path.join(path, "infixcalc.log")
+timestamp = datetime.now().isoformat()
+user = os.getenv("USER", "anonymous")
+
 
 while True:
 
-    args = [f for f in sys.argv[1:]]
-    number_args = len(args)
-    operations = {"sum":"add","sub":"sub","mul":"mul","div":"truediv"}
-    keys_operations = list(operations.keys())
+    # Validacao
+    if not arguments:
+        operation = input("operação:")
+        n1 = input("n1:")
+        n2 = input("n2:")
+        arguments = [operation, n1, n2]
+    elif len(arguments) != 3:
+        print("Número de argumentos inválidos")
+        print("ex: `sum 5 5`")
+        sys.exit(1)
 
-    path = os.curdir
-    filepath = os.path.join(path, "infixcalc.log")
-    timestamp = datetime.now().isoformat()
-    user = os.getenv('USER','anonymous')
+    operation, *nums = arguments
 
-    ## Verifica se não foi passado nenhum argumento e pede input do usuário
-    if number_args == 0:
-        operation = input("operação: ")
-        n1 = float(input("n1: "))
-        n2 = float(input("n2: "))
-    elif number_args == 3:
-        operation = args[0] 
-        n1 = float(args[1])
-        n2 = float(args[2])
-    else:
-        sys.exit(f"É necessário que sejam informados 3 argumentos, sendo um operador e 2 números.\n Foram informados {number_args} argumento(s)")
+    if operation not in valid_operations:
+        print("Operação inválida")
+        print(valid_operations)
+        sys.exit(1)
 
-    ## Realiza a operação se forem passados os argumentos corretos.   
-    if operation in operations:
-        attr = f"__{operations[operation]}__"
-        result = getattr(n1,attr)(n2)
-        print(f"{result}")
-        try:
-            with open(filepath, "a") as file_:
-                file_.write(f"{timestamp} - {user} -{operation},{n1},{n2} = {result}\n")
-        except PermissionError as e:
-            # TODO: logging
-            print(str(e))
+    validated_nums = []
+    for num in nums:
+        if not num.replace(".", "").isdigit():
+            print(f"Numero inválido {num}")
             sys.exit(1)
-    else:
-        print(f"""São aceitos apenas uma das 4 operações a seguir: {keys_operations}""")
+        if "." in num:
+            num = float(num)
+        else:
+            num = int(num)
+        validated_nums.append(num)
 
-    if input("Pressione enter para continuar ou qualquer tecla para sair")
+    try:
+        n1, n2 = validated_nums
+    except ValueError as e:
+        print(str(e))
+        sys.exit(1)
+
+    result = valid_operations[operation](n1, n2)
+    print(f"O resultado é {result}")
+
+    try:
+        with open(filepath, "a") as log:
+            log.write(f"{timestamp} - {user} - {operation},{n1},{n2} = {result}\n")
+    except PermissionError as e:
+        print(str(e))
+        sys.exit(1)
+
+    arguments = None
+
+    if input("Pressione enter para continar ou qualquer tecla para sair"):
         break

@@ -5,8 +5,7 @@ import logging
 from logging import handlers
 
 # BOILERPLATE
-# TODO: usar função
-# TODO: usar lib(loguru)
+# TODO: Mover para o módulo de utilidades
 log_level = os.getenv("LOG_LEVEL", "WARNING").upper()
 log = logging.Logger(__name__, log_level)
 #ch = logging.StreamHandler() # Console/terminal/stderr
